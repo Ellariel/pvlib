@@ -1,0 +1,3 @@
+requests
+pandas
+faas_cache_dict
