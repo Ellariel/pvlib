@@ -1,0 +1,1 @@
+from .pvgis import PVGIS
