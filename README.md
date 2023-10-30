@@ -12,6 +12,6 @@ pip install git+https://github.com/ellariel/pvutils.git
 
 ### Run
 ```shell
-from pvutils.pvgis import PVGIS
-print(PVGIS(local_cache_dir=None, verbose=True).get_production_timeserie())
+import pvutils
+print(pvutils.PVGIS(local_cache_dir=None, verbose=True).get_production_timeserie())
 ```
