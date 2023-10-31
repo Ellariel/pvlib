@@ -4,6 +4,7 @@ import datetime
 import requests
 import hashlib
 import pandas as pd
+import functools
 from faas_cache_dict import FaaSCacheDict
 from faas_cache_dict.file_faas_cache_dict import FileBackedFaaSCache
 
@@ -64,9 +65,10 @@ class PVGIS(object):
             self.cache = FileBackedFaaSCache.init(key_name=self.key_name, root_path=self.cache_root_dir)
         else:
             self.cache = FaaSCacheDict()
-        
+            
+    @functools.cache
     def get_radiation_data(self, slope=0, azimuth=0, pvtech='CIS', lat=52.373, lon=9.738, system_loss=14, datayear=2016, datatype='hourly'):  
-             
+
         api_parameters = ', '.join([f"{k}:{v}" for k, v in sorted(locals().items(), key=lambda item: item[0]) if k not in ['self']])     
         request_key = _get_hash(api_parameters)
         if request_key not in self.cache:
@@ -84,7 +86,8 @@ class PVGIS(object):
             if self.verbose:
                 print(f'getting cached PVGIS data, {api_parameters}')
         return self.cache[request_key]
-    
+
+    @functools.cache
     def get_production_timeserie(self, slope=0, azimuth=0, pvtech='CIS', lat=52.373, lon=9.738, system_loss=14, datayear=2016, datatype='hourly', name='production'):
         # makes float64 timeserie with DatetimeIndex, Name: production, Length: 8784, dtype: float64
         data_json = self.get_radiation_data(slope=slope, azimuth=azimuth, 
@@ -92,9 +95,6 @@ class PVGIS(object):
                                             system_loss=system_loss, 
                                             datayear=datayear, datatype=datatype)
         return pd.Series({_format_datetime(i['time']) : i['P'] for i in data_json['outputs'][datatype]}, name=name)
-        
-        
-        
         
 if __name__ == "__main__":
     print(PVGIS(local_cache_dir=None, verbose=True).get_production_timeserie())
