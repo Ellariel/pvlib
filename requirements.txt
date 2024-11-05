@@ -1,3 +1,3 @@
-requests
 pandas
-faas_cache_dict
+requests>=2.31.0
+diskcache>=5.6.3
